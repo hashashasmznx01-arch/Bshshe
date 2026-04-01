@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>⚠️ تحذير ⚠️</title>
+<style>
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background: black;
+    color: red;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    overflow: hidden;
+}
+#message {
+    font-size: 2em;
+    margin-bottom: 20px;
+}
+#fileButton {
+    width: 250px;
+    padding: 20px;
+    font-size: 1.2em;
+    cursor: pointer;
+    border: 3px solid red;
+    background-color: black;
+    color: red;
+    border-radius: 15px;
+    transition: 0.2s;
+}
+#fileButton:hover {
+    background-color: darkred;
+}
+#progressContainer {
+    width: 80%;
+    background-color: grey;
+    height: 30px;
+    border-radius: 15px;
+    overflow: hidden;
+    display: none;
+    margin-top: 20px;
+}
+#progressBar {
+    width: 0%;
+    height: 100%;
+    background-color: red;
+}
+</style>
+</head>
+<body>
+
+<div id="message">اضغط على المربع لعرض محتوى الملف</div>
+<div id="fileButton">اضغط لعرض محتوى الملف</div>
+
+<div id="progressContainer">
+    <div id="progressBar"></div>
+</div>
+
+<audio id="alarm" loop>
+  <source src="https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg" type="audio/ogg">
+</audio>
+
+<script>
+const message = document.getElementById("message");
+const button = document.getElementById("fileButton");
+const progressContainer = document.getElementById("progressContainer");
+const progressBar = document.getElementById("progressBar");
+const alarm = document.getElementById("alarm");
+
+function vibratePhone() {
+    if (navigator.vibrate) {
+        navigator.vibrate([300,200,300,200,500]);
+    }
+}
+
+button.addEventListener("click", () => {
+    button.style.display = "none"; // اختفاء الزر
+    message.innerHTML = "جاري تحويل البيانات إلى هاتف POCO X7 Pro";
+    progressContainer.style.display = "block";
+
+    alarm.play().catch(()=>{});
+    vibratePhone();
+
+    // شريط التقدم مع العد التنازلي
+    let width = 0;
+    const interval = setInterval(() => {
+        width += 1.5; // سرعة امتلاء الشريط
+        if (width >= 100) width = 100;
+        progressBar.style.width = width + "%";
+
+        // تحديث النص للعد التنازلي
+        if (width < 33) {
+            message.innerHTML = "يتم تحويل البيانات... 3";
+        } else if (width < 66) {
+            message.innerHTML = "يتم تحويل البيانات... 2";
+        } else if (width < 100) {
+            message.innerHTML = "يتم تحويل البيانات... 1";
+        }
+
+        vibratePhone();
+
+        if (width >= 100) {
+            clearInterval(interval);
+            alarm.pause();
+            message.innerHTML = "😂 مزحة! لا تخاف";
+        }
+    }, 100); // تحديث كل 0.1 ثانية
+});
+</script>
+
+</body>
+</html>
